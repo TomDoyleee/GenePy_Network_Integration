@@ -261,7 +261,7 @@ NOT_IBD_99 = get_diagnosis_df(genepy_bin_99, 'NOT_IBD')
 
 def get_top_bin_sum(matrix, head=30):
     '''
-    Returns a series 
+    Returns a series of the sum of patients with disease in that gene.
     
     Parameters
     ----------
