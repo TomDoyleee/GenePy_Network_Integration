@@ -3,7 +3,7 @@ import pandas as pd
 import get_PPI
 import concurrent.futures
 from multiprocessing import Pool
-from binarised import UC_bin_97_5, CD_bin_97_5, CD_bin_99, UC_bin_99, CD_bin_95, UC_bin_95
+from get_data import UC_bin_97_5, CD_bin_97_5, CD_bin_99, UC_bin_99, CD_bin_95, UC_bin_95
 
 
 

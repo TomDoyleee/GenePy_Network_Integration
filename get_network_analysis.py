@@ -54,6 +54,7 @@ def create_multiple_graph(directory):
     return G
 '''
 
+
 def create_graph_list_from_directory(directory):
     '''
     Function to generate a list of NetworkX graphs from directory of edge lists for each graphs.
@@ -281,3 +282,34 @@ def get_patient_names_from_multigraph(multigraph, gene = None):
     df = count_patient_edges(multigraph, gene)
     df['patients_names'] = patient_list
     return df
+
+# Graph lists
+CD_95_GL = create_graph_list_from_directory("patient_networks/CD_95_network_3/")
+UC_95_GL = create_graph_list_from_directory("patient_networks/UC_95_network_3/")
+
+CD_99_GL = create_graph_list_from_directory("patient_networks/CD_99_network_3/")
+UC_99_GL = create_graph_list_from_directory("patient_networks/UC_99_network_3/")
+
+# only keep edges with weight >0.7 
+get_edges_with_weight_in_graph_list(CD_95_GL)
+get_edges_with_weight_in_graph_list(UC_95_GL)
+
+get_edges_with_weight_in_graph_list(CD_99_GL)
+get_edges_with_weight_in_graph_list(UC_99_GL)
+
+
+# Multigraphs
+# Note: edge scores are aleady >0.7
+CD_95_MG = create_multiple_graph("patient_networks/CD_95_network_3/")
+UC_95_MG = create_multiple_graph("patient_networks/UC_95_network_3/")
+
+CD_99_MG = create_multiple_graph("patient_networks/CD_99_network_3/")
+UC_99_MG = create_multiple_graph("patient_networks/UC_99_network_3/")
+
+
+# Node degree df
+CD_95_ND = get_node_degree_df(CD_95_GL)
+UC_95_ND = get_node_degree_df(UC_95_GL)
+
+CD_99_ND = get_node_degree_df(CD_99_GL)
+UC_99_ND = get_node_degree_df(UC_99_GL)
