@@ -89,6 +89,7 @@ def view_networkx_in_cytoscape(graph):
 
 # TODO: add node 
 # TODO: list comprehension 
+'''
 def create_multigraph_network_in_cytoscape(multigraph):
     list4 = []
     for u, v, data in multigraph.edges.data():
@@ -104,4 +105,20 @@ def create_multigraph_network_in_cytoscape(multigraph):
                   'diagnosis',
                   'interaction']
     return py4.create_network_from_data_frames(nodes= pd.unique(df[['source', 'target']].values.ravel('K')), edges=df)
-    
+'''
+
+
+def create_multigraph_network_in_cytoscape(multigraph, diagnosis='CD'):
+    edge_df = pd.DataFrame([[u, v, data['name'], data['weight']] for u, v, data in multigraph.edges.data()])
+    edge_df['4'] = diagnosis
+    edge_df['5'] = 'pp'
+    edge_df.columns = ['source', 
+                       'target',
+                       'patientID', 
+                       'weight',
+                       'diagnosis',
+                       'interaction']
+    node_df = pd.DataFrame(pd.unique(edge_df[['source', 'target']].values.ravel('K')))
+    node_df = pd.concat([node_df, pd.Series([get_patients_above_zero_as_series(CD_bin_95, i) for i in node_df[0]])], axis=1)
+    node_df.columns = ['id','patient_name']
+    return py4.create_network_from_data_frames(nodes=node_df, edges=edge_df)
