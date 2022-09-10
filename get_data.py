@@ -37,7 +37,6 @@ LOEUF_series = pd.Series(LOEUF_df["oe_lof_upper"].values,
 
 LOEUF_dict = LOEUF_series.to_dict()
 
-
 # normalise genepy across genes using Min max scale, every value to be between 0 and 1.
 # DEPRECIATED
 def norm_genepy():
@@ -229,6 +228,8 @@ UC_subset = get_diagnosis_df(genepy_norm_loeuf, 'UC')
 IBDU_subset = get_diagnosis_df(genepy_norm_loeuf, 'IBDU')
 NOT_IBD_subset = get_diagnosis_df(genepy_norm_loeuf, 'NOT_IBD')
 '''
+
+## Generate dataframes
 
 # binerise genepy
 genepy_bin_95 = remove_ensembl_IDs(binarise_genepy(percent=95))
