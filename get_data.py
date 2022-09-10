@@ -15,7 +15,6 @@ loeuf_excel_file = "../Data/LOEUF/gnomad2.xlsx"
 # patient phenotype table
 patient_phenotype_file = '../Data/ibd_phe.txt'
 
-
 # import genepy matix as df. 'Sampleid' is column name for the sample ids set to be row index.
 genepy_df = pd.read_table(genepy_matrix_file, 
                           index_col = 'Samid')
