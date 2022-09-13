@@ -13,13 +13,13 @@ loeuf_excel_file = "../Data/LOEUF/gnomad2.xlsx"
 # patient phenotype table
 patient_phenotype_file = '../Data/ibd_phe.txt'
 
-
 # import genepy matix as df. 'Sampleid' is column name for the sample ids set to be row index.
 genepy_df = pd.read_table(genepy_matrix_file, 
                           index_col = 'Samid')
 
 # read patient phenotype into df
 patient_phenotype = pd.read_table(patient_phenotype_file, index_col=0)
+
 
 
 # binerise series (required for binarise_genepy)
@@ -146,6 +146,7 @@ def remove_ensembl_IDs(df):
     
     '''
     return df.rename(columns = lambda colname: colname.split("_")[0])
+
 
 
 # binerise genepy
