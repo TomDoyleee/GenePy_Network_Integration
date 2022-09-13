@@ -3,8 +3,6 @@ import numpy as np
 from sklearn import preprocessing
 import os
 
-# change wd
-os.chdir("/Users/tomdoyle/Documents/University/Southampton/Course/BIOL6068-Research_Project/Python")
 
 # genepy matrix file in relation to wd
 genepy_matrix_file = "../Data/GenePy/GENEPY_JUNE22_CADDCUTOFF15.matrix"
@@ -22,30 +20,6 @@ genepy_df = pd.read_table(genepy_matrix_file,
 
 # read patient phenotype into df
 patient_phenotype = pd.read_table(patient_phenotype_file, index_col=0)
-
-
-#########
-# LOEUF #
-#########
-
-# read LOEUF scores into df
-LOEUF_df = pd.read_excel(loeuf_excel_file, 
-                         sheet_name="Sheet1")
-
-# create series and dict of loeuf scores upper
-LOEUF_series = pd.Series(LOEUF_df["oe_lof_upper"].values, 
-                         index = LOEUF_df["gene"])
-
-LOEUF_dict = LOEUF_series.to_dict()
-
-
-# normalise genepy across genes using Min max scale, every value to be between 0 and 1.
-# DEPRECIATED
-def norm_genepy():
-    '''
-    Function to normalise scores for each gene.
-    '''
-    return genepy_df.apply(preprocessing.minmax_scale, 0)
 
 
 # binerise series (required for binarise_genepy)
@@ -107,55 +81,6 @@ def binarise_genepy(percent=95):
     return(genepy_df.apply(binarise_series,
                            0,
                            percent=percent))
-    
-# removes 'nan' values
-#LOEUF_dict = {k:v if not np.isnan(v) else 1 for k,v in
-#              LOEUF_dict.items() }
-# DEPRECIATED: LOEUF score does not filter out 'noise'
-def loeuf_score(df):
-    list_LOEUF_scores = []
-    # check that gene name in df is in the LOEUF dict
-    for i in genepy_df.columns:
-        if i in LOEUF_dict:
-            # if it is, append the dictionary value
-            list_LOEUF_scores.append(LOEUF_dict[i])
-        else:
-            # if not, append NaN
-            list_LOEUF_scores.append(np.nan)
-            
-    # change list back into series with df.column names     
-    LOEUF_score_series = pd.Series(list_LOEUF_scores, 
-                                   index = df.columns)
-    # Fill any NaN values so that it can be devided 
-    filled_series = LOEUF_score_series.fillna(1)
-    return filled_series
-
-'''
-# gets a list of loeuf scores for genepy matrix
-def get_loeuf_score(df_for_loeuf):
-'''
-    # function to get loeuf scores for df containing gene names as column headings
-'''
-    loeuf_score_list = []
-    for i in df_for_loeuf.columns:
-        if i in LOEUF_dict.keys():
-            if LOEUF_dict[i] == str('NaN'):
-                loeuf_score_list.append(1)
-            else:
-                loeuf_score_list.append(LOEUF_dict[i])
-        else:
-            loeuf_score_list.append(1)
-    return(loeuf_score_list)
-'''
-    
-# weight normalised scores by LOEUF
-# DEPRECIETED
-def divide_df_by_loeuf(df):
-    '''
-    Function to divide df rows by loeuf score for each gene
-    '''
-    return df/loeuf_score(df)
-
 
 
 def get_diagnosis(diagnosis):
@@ -223,14 +148,6 @@ def remove_ensembl_IDs(df):
     return df.rename(columns = lambda colname: colname.split("_")[0])
 
 
-'''
-# create subset df
-CD_subset = get_diagnosis_df(genepy_norm_loeuf, 'CD')
-UC_subset = get_diagnosis_df(genepy_norm_loeuf, 'UC')
-IBDU_subset = get_diagnosis_df(genepy_norm_loeuf, 'IBDU')
-NOT_IBD_subset = get_diagnosis_df(genepy_norm_loeuf, 'NOT_IBD')
-'''
-
 # binerise genepy
 genepy_bin_95 = remove_ensembl_IDs(binarise_genepy(percent=95))
 genepy_bin_97_5 = remove_ensembl_IDs(binarise_genepy(percent=97.5))
@@ -265,26 +182,32 @@ def get_top_bin_sum(matrix, head=30):
     
     Parameters
     ----------
+    matrix: a DataFrame style object
+        A matrix to be summed down columns
     
+    head: int or None
+        The number of rows for the returned series. If 'None', all column names will be returned.
     Returns
     -------
+    Series object, with index as column names and values as summed objects.
     
     '''
     return matrix.sum().sort_values(ascending=False).head(head)
 
 
-def get_as_percentage(matrix, cohort):
+def get_as_percentage(matrix, cohort, head):
     '''
-    returns as a percentage of cohort, either 'CD' or 'UC'
+    Returns as a percentage of cohort, either 'CD' or 'UC'
     
     Parameters
     ----------
+    
     
     Returns
     -------
     
     '''
-    top_series = get_top_bin_sum(matrix)
+    top_series = get_top_bin_sum(matrix, head)
     if cohort == 'CD':
         return((top_series/681)*100)
     elif cohort == 'UC':
@@ -350,3 +273,78 @@ def get_matching_as_df_percentage(CD_matrix, UC_matrix):
                     UC_series,
                     left_index=True,
                     right_index=True))
+
+
+#########
+# LOEUF #
+#########
+
+# read LOEUF scores into df
+LOEUF_df = pd.read_excel(loeuf_excel_file, 
+                         sheet_name="Sheet1")
+
+# create series and dict of loeuf scores upper
+LOEUF_series = pd.Series(LOEUF_df["oe_lof_upper"].values, 
+                         index = LOEUF_df["gene"])
+
+LOEUF_dict = LOEUF_series.to_dict()
+
+
+# normalise genepy across genes using Min max scale, every value to be between 0 and 1.
+# DEPRECIATED
+def norm_genepy():
+    '''
+    Function to normalise scores for each gene.
+    '''
+    return genepy_df.apply(preprocessing.minmax_scale, 0)
+
+   
+# removes 'nan' values
+#LOEUF_dict = {k:v if not np.isnan(v) else 1 for k,v in
+#              LOEUF_dict.items() }
+# DEPRECIATED: LOEUF score does not filter out 'noise'
+def loeuf_score(df):
+    list_LOEUF_scores = []
+    # check that gene name in df is in the LOEUF dict
+    for i in genepy_df.columns:
+        if i in LOEUF_dict:
+            # if it is, append the dictionary value
+            list_LOEUF_scores.append(LOEUF_dict[i])
+        else:
+            # if not, append NaN
+            list_LOEUF_scores.append(np.nan)
+            
+    # change list back into series with df.column names     
+    LOEUF_score_series = pd.Series(list_LOEUF_scores, 
+                                   index = df.columns)
+    # Fill any NaN values so that it can be devided 
+    filled_series = LOEUF_score_series.fillna(1)
+    return filled_series
+
+'''
+# gets a list of loeuf scores for genepy matrix
+def get_loeuf_score(df_for_loeuf):
+'''
+    # function to get loeuf scores for df containing gene names as column headings
+'''
+    loeuf_score_list = []
+    for i in df_for_loeuf.columns:
+        if i in LOEUF_dict.keys():
+            if LOEUF_dict[i] == str('NaN'):
+                loeuf_score_list.append(1)
+            else:
+                loeuf_score_list.append(LOEUF_dict[i])
+        else:
+            loeuf_score_list.append(1)
+    return(loeuf_score_list)
+'''
+    
+# weight normalised scores by LOEUF
+# DEPRECIETED
+def divide_df_by_loeuf(df):
+    '''
+    Function to divide df rows by loeuf score for each gene
+    '''
+    return df/loeuf_score(df)
+
+
