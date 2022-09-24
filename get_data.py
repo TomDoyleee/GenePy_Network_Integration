@@ -59,7 +59,7 @@ def binarise_series(gene_series, percent=95):
 
 
 
-def binarise_genepy(percent=95):
+def binarise_genepy(matrix = genepy_df, percent=95):
     '''
     Function to binarise Genepy scores.
     
@@ -69,7 +69,11 @@ def binarise_genepy(percent=95):
     
     Parameters
     ----------
-    percent : array_like of float, default = 95
+    
+    matrix: matrix of float values, default = genepy_df
+        
+    
+    percent : Float, default = 95
         Percentile or sequence of percentiles to compute, which must be between 0 and 100 inclusive. See np.percentile().
     
     Returns
@@ -78,9 +82,9 @@ def binarise_genepy(percent=95):
     Genepy DataFrame with matching index and column names, but with binarised scores for given percentile as described in 'binarise_series'
     
     '''
-    return(genepy_df.apply(binarise_series,
-                           0,
-                           percent=percent))
+    return(matrix.apply(binarise_series,
+                        0,
+                        percent=percent))
 
 
 def get_diagnosis(diagnosis):
